@@ -11,3 +11,6 @@ class RegisterView(View):
 
         return render(request, 'register.html')
 
+    def post(self, request):
+
+        pass
