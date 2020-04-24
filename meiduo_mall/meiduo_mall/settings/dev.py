@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
+
+    'users',  # 用戶模塊
+    'contents',  # 首頁廣告模塊
 ]
 
 MIDDLEWARE = [
