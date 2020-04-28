@@ -31,6 +31,27 @@ let vm = new Vue({
                 this.error_name_message = "請輸入5-20位字符的用戶名";
             }
 
+            // 判斷用戶名是否重複註冊
+            if (this.error_name == false) {
+                let url = '/usernames/' + this.username + '/count';
+                axios.get(url, {
+                    responseType: 'json',
+                })
+                    .then(response => {
+                        if (response.data.count == 1) {
+                            //用戶已存在
+                            this.error_name_message = '用戶已存在';
+                            this.error_name = true;
+                        } else {
+                            this.error_name = false;
+                        }
+
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    })
+            }
+
         },
         check_password() {
             let re = /^[0-9a-zA-Z_-]{8,20}$/

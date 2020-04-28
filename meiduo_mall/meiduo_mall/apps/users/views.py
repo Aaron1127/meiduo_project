@@ -5,8 +5,19 @@ import re
 from django.db import DatabaseError
 from users.models import User
 from django.contrib.auth import login
+from meiduo_mall.utils.response_code import RETCODE
 
 # Create your views here.
+
+
+class UsernameCountView(View):
+    """判斷用戶是否重複註冊"""
+
+    def get(self, request, username):
+
+        count = User.objects.filter(username=username).count()
+
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'count': count})
 
 
 class RegisterView(View):
