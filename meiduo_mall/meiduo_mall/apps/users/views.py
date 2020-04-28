@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse, redirect
 from django.views import View
 from django import http
 import re
@@ -49,3 +49,4 @@ class RegisterView(View):
 
         return http.HttpResponse('註冊成功,重定向到首頁')
 
+        return redirect(reverse('contents:index'))
