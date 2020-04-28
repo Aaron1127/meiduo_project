@@ -4,6 +4,7 @@ from django import http
 import re
 from django.db import DatabaseError
 from users.models import User
+from django.contrib.auth import login
 
 # Create your views here.
 
@@ -42,11 +43,12 @@ class RegisterView(View):
             return http.HttpResponseForbidden("請勾選用戶協議");
 
         try:
-            User.objects.create_user(username=username, password=password, mobile=mobile)
+            user = User.objects.create_user(username=username, password=password, mobile=mobile)
 
         except DatabaseError:
             return render(request, 'register.html', {'register_errmsg': '註冊失敗'})
 
-        return http.HttpResponse('註冊成功,重定向到首頁')
+        # 登入狀態保持
+        login(request, user)
 
         return redirect(reverse('contents:index'))
