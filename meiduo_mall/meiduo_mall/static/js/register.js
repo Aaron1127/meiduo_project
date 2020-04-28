@@ -79,6 +79,25 @@ let vm = new Vue({
                 this.error_mobile_message = '手機號碼格式有誤';
             }
 
+            //判斷用戶手機是否重複
+            if (this.error_mobile == false) {
+                let url = '/mobiles/' + this.mobile + '/count';
+                axios.get(url, {
+                    responseType: 'json'
+                })
+                    .then(response => {
+                        if (response.data.count == 1) {
+                            this.error_mobile_message = '手機已存在';
+                            this.error_mobile = true;
+                        } else {
+                            this.error_mobile = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                    })
+            }
+
         },
         check_allow() {
             if (!this.allow) {
