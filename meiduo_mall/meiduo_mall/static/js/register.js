@@ -9,6 +9,8 @@ let vm = new Vue({
         password2: '',
         mobile: '',
         allow: '',
+        image_code_url: '',
+        uuid: '',
 
         //v-show
         error_name: false,
@@ -21,7 +23,16 @@ let vm = new Vue({
         error_name_message: '',
         error_mobile_message: '',
     },
+    mounted() {  // 頁面加載完成時被調用
+        this.generate_image_code();
+    },
     methods: {
+        // 生成圖形驗證碼獲取路徑(含UUID)
+        generate_image_code() {
+            this.uuid = generateUUID();
+            this.image_code_url = '/image_codes/' + this.uuid + '/';
+
+        },
         check_username() {
             let re = /^[a-zA-Z0-9_-]{5,20}$/
             if (re.test(this.username)) {
