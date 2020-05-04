@@ -12,6 +12,8 @@ let vm = new Vue({
         image_code_url: '',
         uuid: '',
         image_code: '',
+        sms_code_tip: '獲取簡訊驗證碼',
+        send_flag: false,
 
         //v-show
         error_name: false,
@@ -34,6 +36,55 @@ let vm = new Vue({
         generate_image_code() {
             this.uuid = generateUUID();
             this.image_code_url = '/image_codes/' + this.uuid + '/';
+
+        },
+        send_sms_code() {
+            if (this.send_flag == true) {
+                return;
+            }
+            this.send_flag = true;
+
+            this.check_mobile();
+            this.check_image_code();
+
+            if (this.error_mobile == true || this.error_image_code == true) {
+                this.send_flag = false;
+                return;
+            }
+
+            let url = '/sms_codes/' + this.mobile + '/?image_code=' + this.image_code + '&uuid=' + this.uuid;
+            axios.get(url, {
+                responseType: 'json'
+            })
+                .then(response => {
+                    if (response.data.code == '0') {
+                        // 顯示倒數計時60秒
+                        let num = 60;
+                        let t = setInterval(() => {
+                            if (num == 1) {
+                                clearInterval(t);
+                                this.sms_code_tip = '獲取簡訊驗證碼';
+                                this.generate_image_code();
+                                this.send_flag = false;
+
+                            } else {
+                                num -= 1;
+                                this.sms_code_tip = num + '秒';
+                            }
+                        }, 1000)
+
+                    } else {
+                        if (response.data.code == '4001') {
+                            this.error_image_code_message = response.data.errmsg;
+                            this.error_image_code = true;
+                        }
+                        this.send_flag = false;
+                    }
+                })
+                .catch(error => {
+                    console.log(error.response)
+                    this.send_flag = false;
+                })
 
         },
         check_username() {

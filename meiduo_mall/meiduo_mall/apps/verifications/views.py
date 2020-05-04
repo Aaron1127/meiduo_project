@@ -35,13 +35,13 @@ class SMSCodeView(View):
         if image_code_server is None:
             return http.JsonResponse({'code': RETCODE.IMAGECODEERR, 'errmsg': '圖形驗證碼已失效'})
 
-        # 刪除圖形驗證碼
-        redis_conn.delete('img_%s' % uuid)
-
         # 對比圖形驗證碼
         image_code_server = image_code_server.decode()  # 將byte轉成字符串
         if image_code_client.lower() != image_code_server.lower():
             return http.JsonResponse({'code': RETCODE.IMAGECODEERR, 'errmsg': '輸入的圖形驗證碼有誤'})
+
+        # 刪除圖形驗證碼 避免惡意測試
+        redis_conn.delete('img_%s' % uuid)
 
         # 生成簡訊驗證碼
         # sms_code = '%06d' % random.randint(0, 999999)
