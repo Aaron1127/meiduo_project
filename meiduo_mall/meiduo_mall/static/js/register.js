@@ -80,6 +80,9 @@ let vm = new Vue({
                         if (response.data.code == '4001') {
                             this.error_image_code_message = response.data.errmsg;
                             this.error_image_code = true;
+                        } else if (response.data.code == '4002') {
+                            this.error_sms_code_message = response.data.errmsg;
+                            this.error_sms_code = true;
                         }
                         this.send_flag = false;
                     }

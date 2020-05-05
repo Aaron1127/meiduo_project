@@ -30,8 +30,15 @@ class SMSCodeView(View):
         if not all([mobile, image_code_client, uuid]):
             return http.HttpResponseForbidden('缺少必傳參數')
 
-        # 提取圖形驗證碼
+        # 建立redis連接
         redis_conn = get_redis_connection('verify_code')
+
+        # 判斷是否已是否頻繁發送簡訊驗證碼
+        send_flag = redis_conn.get('send_flag_%s' % mobile)
+        if send_flag:
+            return http.JsonResponse({'code': RETCODE.THROTTLINGERR, 'errmsg': '發送簡訊驗證碼過於頻繁'})
+
+        # 提取圖型驗證碼
         image_code_server = redis_conn.get('img_%s' % uuid)
 
         if image_code_server is None:
@@ -52,6 +59,8 @@ class SMSCodeView(View):
 
         # 保存簡訊驗證碼
         redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        # 保存已發送簡訊驗證碼標記
+        redis_conn.setex('send_flag_%s' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
 
         # 發送簡訊驗證碼
         # TO DO
