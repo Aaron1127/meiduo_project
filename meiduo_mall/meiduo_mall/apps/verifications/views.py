@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from django.views import View
-
-from verifications.libs.captcha.captcha import captcha
 from django_redis import get_redis_connection
 from django import http
+import random, logging
+
+from verifications.libs.captcha.captcha import captcha
 from . import constants
 from meiduo_mall.utils.response_code import RETCODE
-import random
-
 # Create your views here.
+
+# 日誌輸出器
+logger = logging.getLogger('django')
 
 
 class SMSCodeView(View):
@@ -46,6 +48,7 @@ class SMSCodeView(View):
         # 生成簡訊驗證碼
         # sms_code = '%06d' % random.randint(0, 999999)
         sms_code = '123456'
+        logger.info(sms_code)
 
         # 保存簡訊驗證碼
         redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)

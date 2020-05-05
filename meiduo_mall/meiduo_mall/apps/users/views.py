@@ -1,12 +1,13 @@
 from django.shortcuts import render, reverse, redirect
 from django.views import View
 from django import http
-import re
 from django.db import DatabaseError
-from users.models import User
 from django.contrib.auth import login
-from meiduo_mall.utils.response_code import RETCODE
+from django_redis import get_redis_connection
+import re
 
+from users.models import User
+from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
 
 
@@ -43,6 +44,7 @@ class RegisterView(View):
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
         mobile = request.POST.get('mobile')
+        sms_code_client = request.POST.get('sms_code')
         allow = request.POST.get('allow')
 
         if not all([username, password, password2, mobile, allow]):
@@ -59,6 +61,14 @@ class RegisterView(View):
 
         if not re.match(r'^09\d{8}$', mobile):
             return http.HttpResponseForbidden("手機格式有誤");
+
+        # 判斷簡訊驗證碼是否正確
+        redis_conn = get_redis_connection('verify_code')
+        sms_code_server = redis_conn.get('sms_%s' % mobile)
+        if sms_code_server is None:
+            return render(request, 'register.html', {'sms_code_errmsg': '簡訊驗證碼已失效'})
+        if sms_code_client != sms_code_server.decode():
+            return render(request, 'register.html', {'sms_code_errmsg': '輸入簡訊驗證碼有誤'})
 
         if allow != 'on':
             return http.HttpResponseForbidden("請勾選用戶協議");

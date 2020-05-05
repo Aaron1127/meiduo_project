@@ -13,6 +13,7 @@ let vm = new Vue({
         uuid: '',
         image_code: '',
         sms_code_tip: '獲取簡訊驗證碼',
+        sms_code: '',
         send_flag: false,
 
         //v-show
@@ -22,11 +23,13 @@ let vm = new Vue({
         error_mobile: false,
         error_allow: false,
         error_image_code: false,
+        error_sms_code: false,
 
         //error_message
         error_name_message: '',
         error_mobile_message: '',
         error_image_code_message: '',
+        error_sms_code_message: '',
     },
     mounted() {  // 頁面加載完成時被調用
         this.generate_image_code();
@@ -173,6 +176,15 @@ let vm = new Vue({
             }
 
         },
+        check_sms_code() {
+            if (this.sms_code.length != 6) {
+                this.error_sms_code = true;
+                this.error_sms_code_message = '請填寫簡訊驗證碼';
+            } else {
+                this.error_sms_code = false;
+            }
+
+        },
         check_allow() {
             if (!this.allow) {
                 this.error_allow = true;
@@ -186,12 +198,14 @@ let vm = new Vue({
             this.check_password();
             this.check_password2();
             this.check_mobile();
+            this.check_sms_code();
             this.check_allow();
 
             if(this.error_name == true ||
                this.error_password == true ||
                this.error_password2 == true ||
-               this.error_mobile ==true ||
+               this.error_mobile == true ||
+                this.error_sms_code == true ||
                this.error_allow == true) {
 
                 window.event.returnValue = false;
