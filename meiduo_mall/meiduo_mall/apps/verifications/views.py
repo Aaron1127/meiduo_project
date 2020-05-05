@@ -57,10 +57,18 @@ class SMSCodeView(View):
         sms_code = '123456'
         logger.info(sms_code)
 
+        # # 保存簡訊驗證碼
+        # redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        # # 保存已發送簡訊驗證碼標記
+        # redis_conn.setex('send_flag_%s' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+
+        # 創建redis pipeline來合併請求
+        pl = redis_conn.pipeline()
         # 保存簡訊驗證碼
-        redis_conn.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
+        pl.setex('sms_%s' % mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
         # 保存已發送簡訊驗證碼標記
-        redis_conn.setex('send_flag_%s' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+        pl.setex('send_flag_%s' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
+        pl.execute()
 
         # 發送簡訊驗證碼
         # TO DO
