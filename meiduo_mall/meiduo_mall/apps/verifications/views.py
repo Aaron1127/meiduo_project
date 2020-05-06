@@ -7,6 +7,7 @@ import random, logging
 from verifications.libs.captcha.captcha import captcha
 from . import constants
 from meiduo_mall.utils.response_code import RETCODE
+from celery_tasks.sms.tasks import send_sms_code
 # Create your views here.
 
 # 日誌輸出器
@@ -70,8 +71,8 @@ class SMSCodeView(View):
         pl.setex('send_flag_%s' % mobile, constants.SEND_SMS_CODE_INTERVAL, 1)
         pl.execute()
 
-        # 發送簡訊驗證碼
-        # TO DO
+        # 用celery發送簡訊驗證碼
+        send_sms_code.delay(mobile, sms_code)
 
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '發送簡訊成功'})
 
