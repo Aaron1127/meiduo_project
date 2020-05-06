@@ -219,3 +219,6 @@ LOGGING = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+# 指定自定義用戶認證後端
+AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileBackend']
