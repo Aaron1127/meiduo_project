@@ -2,13 +2,59 @@ from django.shortcuts import render, reverse, redirect
 from django.views import View
 from django import http
 from django.db import DatabaseError
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django_redis import get_redis_connection
 import re
 
 from users.models import User
 from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
+
+
+class LoginView(View):
+    """用戶登入"""
+
+    def get(self, request):
+        """提供用戶登入頁面"""
+
+        return render(request, 'login.html')
+
+    def post(self, request):
+        """用戶登入邏輯"""
+
+        # 接收參數
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remembered = request.POST.get('remembered')
+
+        # 校驗參數
+        if not all([username, password]):
+            return http.HttpResponseForbidden('缺少必傳參數')
+
+        if not re.match(r'^[a-zA-z0-9_-]{5,20}$', username):
+            return http.HttpResponseForbidden('請輸入正確的用戶名')
+
+        if not re.match(r'^[a-zA-Z0-9]{8,20}$', password):
+            return http.HttpResponseForbidden('密碼最少8位,最長20位')
+
+        # 認證用戶
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return render(request, 'login.html', {'account_errmsg': '帳號或密碼錯誤'})
+
+        # 狀態保持
+        login(request, user)
+        # 使用remembered來確定狀態保持週期(實現記住登入)
+        if remembered != 'on':
+            # 沒有記住登入,狀態保持在瀏覽器繪畫結束後就銷毀
+            request.session.set_expiry(0)  # 單位是秒
+        else:
+            # 記住登入,狀態保持週期為兩周,None預設為兩周
+            request.session.set_expiry(None)
+
+        # 響應,重定向到首頁
+        return redirect(reverse('contents:index'))
+
 
 
 class UsernameCountView(View):
