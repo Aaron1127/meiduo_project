@@ -4,11 +4,20 @@ from django import http
 from django.db import DatabaseError
 from django.contrib.auth import login, authenticate, logout
 from django_redis import get_redis_connection
+from django.contrib.auth.mixins import LoginRequiredMixin
 import re
 
 from users.models import User
 from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
+
+
+class UserInfoView(LoginRequiredMixin, View):
+    """用戶中心"""
+
+    def get(self, request):
+
+        return render(request, 'user_center_info.html')
 
 
 class LogoutView(View):
@@ -65,14 +74,19 @@ class LoginView(View):
             # 記住登入,狀態保持週期為兩周,None預設為兩周
             request.session.set_expiry(None)
 
-        # 響應,重定向到首頁
-        response = redirect(reverse('contents:index'))
+        # 先取出next
+        next = request.GET.get('next')
+        if next:
+            # 重定向到next所指的頁面
+            response = redirect(next)
+        else:
+            # 重定向到首頁
+            response = redirect(reverse('contents:index'))
 
         # 為了在首頁右上角顯示用戶名,須將用戶名緩存到cookie中
         response.set_cookie('username', user.username, max_age=3600 * 24 * 14)
 
         return response
-
 
 
 class UsernameCountView(View):

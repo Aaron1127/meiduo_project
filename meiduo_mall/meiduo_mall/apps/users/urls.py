@@ -13,5 +13,7 @@ urlpatterns = [
     url(r'^login/$', views.LoginView.as_view(), name='login'),
     # 用戶登出
     url(r'^logout/$', views.LogoutView.as_view(), name='logout'),
+    # 用戶中心
+    url(r'^info/$', views.UserInfoView.as_view(), name='info'),
 
 ]
