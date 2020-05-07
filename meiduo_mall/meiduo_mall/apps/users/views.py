@@ -2,13 +2,26 @@ from django.shortcuts import render, reverse, redirect
 from django.views import View
 from django import http
 from django.db import DatabaseError
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django_redis import get_redis_connection
 import re
 
 from users.models import User
 from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
+
+
+class LogoutView(View):
+
+    def get(self, request):
+
+        logout(request)
+
+        response = redirect(reverse('contents:index'))
+
+        response.delete_cookie('username')
+
+        return response
 
 
 class LoginView(View):
