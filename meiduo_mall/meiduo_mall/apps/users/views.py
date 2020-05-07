@@ -53,7 +53,12 @@ class LoginView(View):
             request.session.set_expiry(None)
 
         # 響應,重定向到首頁
-        return redirect(reverse('contents:index'))
+        response = redirect(reverse('contents:index'))
+
+        # 為了在首頁右上角顯示用戶名,須將用戶名緩存到cookie中
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 14)
+
+        return response
 
 
 
@@ -128,4 +133,11 @@ class RegisterView(View):
         # 登入狀態保持
         login(request, user)
 
-        return redirect(reverse('contents:index'))
+        # 響應,重定向到首頁
+        response = redirect(reverse('contents:index'))
+
+        # 為了在首頁右上角顯示用戶名,須將用戶名緩存到cookie中
+        response.set_cookie('username', user.username, max_age=3600 * 24 * 14)
+
+        return response
+
