@@ -16,8 +16,16 @@ class UserInfoView(LoginRequiredMixin, View):
     """用戶中心"""
 
     def get(self, request):
+        """提供用戶中心頁面"""
+        # 如果LoginRequiredMixin判斷出用戶已登入,那麼request.user就是登入用戶對象
+        context = {
+            'username': request.user.username,
+            'mobile': request.user.mobile,
+            'email': request.user.email,
+            'email_active': request.user.email_active,
+        }
 
-        return render(request, 'user_center_info.html')
+        return render(request, 'user_center_info.html', context)
 
 
 class LogoutView(View):
