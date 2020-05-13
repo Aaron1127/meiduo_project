@@ -11,10 +11,36 @@ from users.models import User
 from meiduo_mall.utils.response_code import RETCODE
 from meiduo_mall.utils.views import LoginRequiredJSONMixin
 from celery_tasks.email.tasks import send_verify_email
-from users.utils import generate_verify_email_url
+from users.utils import generate_verify_email_url, check_verify_email_token
 # Create your views here.
 
 logger = logging.getLogger('django')
+
+
+class VerifyEmailView(View):
+    """驗證郵箱"""
+
+    def get(self, request):
+        token = request.GET.get('token')
+
+        # 校驗參數
+        if not token:
+            return http.HttpResponseForbidden('缺少token')
+
+        # 從token中提取用戶訊息
+        user = check_verify_email_token(token)
+        if not user:
+            return http.HttpResponseBadRequest('無效的token')
+
+        # 將用戶的email_active欄位設為true
+        try:
+            user.email_active = True
+            user.save()
+        except Exception as e:
+            logger.error(e)
+            return http.HttpResponseServerError('激活郵箱失敗')
+
+        return redirect(reverse('users:info'))
 
 
 class EmailView(LoginRequiredJSONMixin, View):

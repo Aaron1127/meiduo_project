@@ -3,11 +3,9 @@ from django.conf import settings
 from celery_tasks.main import celery_app
 
 
-@celery_app.task(name='send_verify_email')
-def send_verify_email(to_email, verify_url):
+@celery_app.task(bind=True, name='send_verify_email', retry_backoff=3)
+def send_verify_email(self, to_email, verify_url):
     """定義發送驗證郵件任務"""
-
-    print(to_email, verify_url)
 
     subject = "美多商城郵箱驗證"
     html_message = '<p>尊敬的用戶您好！</p>' \
@@ -15,4 +13,8 @@ def send_verify_email(to_email, verify_url):
                    '<p>您的郵箱為：%s 。請點擊此鏈接激活您的郵箱：</p>' \
                    '<p><a href="%s">%s<a></p>' % (to_email, verify_url, verify_url)
 
-    send_mail(subject, '', settings.EMAIL_FROM, [to_email], html_message=html_message)
+    try:
+        send_mail(subject, '', settings.EMAIL_FROM, [to_email], html_message=html_message)
+    except Exception as e:
+        # 觸發錯誤重試,最多5次
+        raise self.retry(exc=e, max_retries=5)
