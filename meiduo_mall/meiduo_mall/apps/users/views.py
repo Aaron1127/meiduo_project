@@ -5,11 +5,42 @@ from django.db import DatabaseError
 from django.contrib.auth import login, authenticate, logout
 from django_redis import get_redis_connection
 from django.contrib.auth.mixins import LoginRequiredMixin
-import re
+import re, json, logging
 
 from users.models import User
 from meiduo_mall.utils.response_code import RETCODE
+from meiduo_mall.utils.views import LoginRequiredJSONMixin
 # Create your views here.
+
+logger = logging.getLogger('django')
+
+
+class EmailView(LoginRequiredJSONMixin, View):
+    """添加郵箱"""
+
+    def put(self, request):
+        # 接收參數
+        json_str = request.body.decode()
+        json_dict = json.loads(json_str)
+        email = json_dict.get('email')
+
+        # 校驗參數
+        if not email:
+            return http.HttpResponseForbidden('缺少email參數')
+        if not re.match(r'^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$', email):
+            return http.HttpResponseForbidden('參數email有誤')
+
+        # 將用戶傳入的email保存到用戶表的email欄位
+        try:
+            request.user.email = email
+            request.user.save()
+
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '新增郵箱失敗'})
+
+        # 響應結果
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
 
 
 class UserInfoView(LoginRequiredMixin, View):
