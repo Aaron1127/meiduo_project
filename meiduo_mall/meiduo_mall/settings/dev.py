@@ -234,3 +234,6 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'aaronltc1127@gmail.com'
 EMAIL_HOST_PASSWORD = 'rnzhfzeugcudvpbb'
 EMAIL_FROM = '美多商城<aaronltc1127@gmail.com>'
+
+# 郵箱認證地址
+EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
