@@ -225,3 +225,12 @@ AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileBackend']
 
 # 判斷用戶是否登入後, 指定未登入用戶重定向的地址
 LOGIN_URL = '/login/'
+
+# 郵件參數
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'aaronltc1127@gmail.com'
+EMAIL_HOST_PASSWORD = 'rnzhfzeugcudvpbb'
+EMAIL_FROM = '美多商城<aaronltc1127@gmail.com>'
