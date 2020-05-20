@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'users',  # 用戶模塊
     'contents',  # 首頁廣告模塊
+    'areas',  # 省市區三及連動
 ]
 
 MIDDLEWARE = [
