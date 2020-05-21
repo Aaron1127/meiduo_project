@@ -121,7 +121,7 @@ let vm = new Vue({
         },
         // 校验手机号
         check_mobile(){
-            let re = /^1[3-9]\d{9}$/;
+            let re = /^09\d{8}$/;
             if(re.test(this.form_address.mobile)) {
                 this.error_mobile = false;
             } else {
