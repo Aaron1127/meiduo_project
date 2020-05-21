@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^addresses/create/$', views.AddressCreateView.as_view()),
     # 修改收貨地址
     url(r'^addresses/(?P<address_id>\d+)/$', views.UpdateDestroyAddressView.as_view()),
-
+    # 設置默認收貨地址
+    url(r'^addresses/(?P<address_id>\d+)/default/$', views.DefaultAddressView.as_view()),
+    # 設置收貨地址標題
+    url(r'^addresses/(?P<address_id>\d+)/title/$', views.UpdateTitleAddressView.as_view()),
 
 ]

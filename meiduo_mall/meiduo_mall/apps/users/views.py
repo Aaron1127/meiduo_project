@@ -18,6 +18,48 @@ from . import constants
 logger = logging.getLogger('django')
 
 
+class UpdateTitleAddressView(LoginRequiredJSONMixin, View):
+    """修改收貨地址標題"""
+
+    def put(self, request, address_id):
+
+        # 接收參數
+        json_dict = json.loads(request.body.decode())
+        title = json_dict.get('title')
+
+        if not title:
+            return http.HttpResponseForbidden('缺少title')
+
+        try:
+            address = Address.objects.get(id=address_id)
+            address.title = title
+            address.save()
+
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '更新標題失敗'})
+
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '更新標題成功'})
+
+
+class DefaultAddressView(LoginRequiredJSONMixin, View):
+    """設置默認收貨地址"""
+
+    def put(self, request, address_id):
+
+        try:
+            address = Address.objects.get(id=address_id)
+
+            request.user.default_address = address
+            request.user.save()
+
+        except Exception as e:
+            logger.error(e)
+            return http.JsonResponse({'code': RETCODE.DBERR, 'errmsg': '設置默認地址失敗'})
+
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': '設置默認地址成功'})
+
+
 class UpdateDestroyAddressView(LoginRequiredJSONMixin, View):
     """修改與刪除收貨地址"""
 
