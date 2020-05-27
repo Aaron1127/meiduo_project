@@ -5,11 +5,12 @@ from django.conf import settings
 class FastDFSStorage(Storage):
     """自定義文件儲存類"""
 
-    # def __init__(self, option=None):
-    #     if not option:
-    #         option = settings.CUSTOM_STORAGE_OPTIONS
-    #
-    #     pass
+    def __init__(self, fdfs_base_url=None):
+        # if not fdfs_base_url:
+        #     self.fdfs_base_url = settings.FDFS_BASE_URL
+        #
+        # self.fdfs_base_url = fdfs_base_url
+        self.fdfs_base_url = fdfs_base_url or settings.FDFS_BASE_URL
 
     def _open(seld, name, mode='rb'):
         pass
@@ -24,4 +25,4 @@ class FastDFSStorage(Storage):
         :return: 文件的全路徑
         """
 
-        return 'http://192.168.181.132:8888/' + name
+        return self.fdfs_base_url + name
