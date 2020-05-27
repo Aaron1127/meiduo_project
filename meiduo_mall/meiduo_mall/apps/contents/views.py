@@ -3,6 +3,7 @@ from django.views import View
 from collections import OrderedDict
 
 from goods.models import GoodsChannel, GoodsChannelGroup, GoodsCategory
+from contents.models import ContentCategory
 # Create your views here.
 
 
@@ -42,9 +43,18 @@ class IndexView(View):
 
             categories[group_id]['sub_cats'].append(cat2)
 
+            # 查詢首頁廣告數據
+            # 查詢所有的廣告類別
+            contents = OrderedDict()
+            content_categories = ContentCategory.objects.all()
+            for content_category in content_categories:
+                # 查詢出未下架的廣告並排序
+                contents[content_category.key] = content_category.content_set.filter(status=True).order_by('sequence')
+
             # 構造上下文
             context = {
                 'categories': categories,
+                'contents': contents,
             }
 
         return render(request, 'index.html', context)
