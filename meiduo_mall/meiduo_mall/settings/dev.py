@@ -103,7 +103,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '192.168.181.131',
+        'HOST': '192.168.181.132',
         'PORT': 3306,
         'USER': 'aaron',
         'PASSWORD': 'p1p9p8p1',
@@ -115,21 +115,21 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.181.131/0",
+        "LOCATION": "redis://192.168.181.132/0",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.181.131/1",
+        "LOCATION": "redis://192.168.181.132/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "verify_code": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.181.131/2",
+        "LOCATION": "redis://192.168.181.132/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
