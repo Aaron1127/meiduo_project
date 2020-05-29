@@ -30,4 +30,8 @@ urlpatterns = [
 
     # areas
     url(r'^', include('areas.urls', namespace='areas')),
+
+    # goods
+    url(r'^', include('goods.urls', namespace='goods')),
+
 ]
