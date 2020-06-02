@@ -246,8 +246,8 @@ EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # FastDFS相關參數
-FDFS_BASE_URL = 'http://192.168.181.135:8888/'
-# FDFS_BASE_URL = 'http://image.meiduo.site:8888/'
+# FDFS_BASE_URL = 'http://192.168.181.135:8888/'
+FDFS_BASE_URL = 'http://image.meiduo.site:8888/'
 
 # Haystack
 HAYSTACK_CONNECTIONS = {
