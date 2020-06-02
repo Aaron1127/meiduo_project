@@ -10,6 +10,13 @@ from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
 
 
+class DetailView(View):
+    """商品詳情頁"""
+
+    def get(self, request, sku_id):
+        return render(request, 'detail.html')
+
+
 class HotGoodsView(View):
     """熱銷排行"""
 
