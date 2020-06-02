@@ -6,7 +6,30 @@ from django.core.paginator import Paginator, EmptyPage
 from goods.models import GoodsCategory, SKU
 from contents.utils import get_categories
 from goods.utils import get_breadcrumb
+from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
+
+
+class HotGoodsView(View):
+    """熱銷排行"""
+
+    def get(self, request, category_id):
+        """查詢指定分類的sku訊息,需上架且由銷量高排到低,取前兩名"""
+
+        skus = SKU.objects.filter(category_id=category_id, is_launched=True).order_by('-sales')[:2]
+
+        # 構造JSON數據
+        hot_skus = []
+        for sku in skus:
+            sku_dict = {
+                'id': sku.id,
+                'name': sku.name,
+                'price': sku.price,
+                'default_image_url': sku.default_image.url,
+            }
+            hot_skus.append(sku_dict)
+
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'hot_skus': hot_skus})
 
 
 class ListView(View):
