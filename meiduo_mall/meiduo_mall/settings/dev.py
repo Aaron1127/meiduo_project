@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'haystack',  # 全文檢索
+
     'users',  # 用戶模塊
     'contents',  # 首頁廣告模塊
     'areas',  # 省市區三及連動
@@ -247,4 +249,15 @@ DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fdfs_storage.FastDFSStorage'
 FDFS_BASE_URL = 'http://192.168.181.135:8888/'
 # FDFS_BASE_URL = 'http://image.meiduo.site:8888/'
 
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://192.168.181.135:9200/', # Elasticsearch伺服器IP位置，port固定為9200
+        'INDEX_NAME': 'meiduo_mall', # Elasticsearch建立的索引庫名稱
+    },
+}
+
+# 當添加、修改、刪除數據時，自動生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
