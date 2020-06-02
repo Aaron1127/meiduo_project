@@ -97,7 +97,7 @@ class SKU(BaseModel):
     sales = models.IntegerField(default=0, verbose_name='銷量')
     comments = models.IntegerField(default=0, verbose_name='評價數')
     is_launched = models.BooleanField(default=True, verbose_name='是否上架銷售')
-    default_image_url = models.CharField(max_length=200, default='', null=True, blank=True, verbose_name='默認圖片')
+    default_image = models.ImageField(max_length=200, default='', null=True, blank=True, verbose_name='默認圖片')
 
     class Meta:
         db_table = 'tb_sku'

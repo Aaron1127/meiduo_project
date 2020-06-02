@@ -103,7 +103,7 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '192.168.181.133',
+        'HOST': '192.168.181.135',
         'PORT': 3306,
         'USER': 'aaron',
         'PASSWORD': 'p1p9p8p1',
@@ -115,21 +115,21 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.181.133/0",
+        "LOCATION": "redis://192.168.181.135/0",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.181.133/1",
+        "LOCATION": "redis://192.168.181.135/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "verify_code": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://192.168.181.133/2",
+        "LOCATION": "redis://192.168.181.135/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -244,7 +244,7 @@ EMAIL_VERIFY_URL = 'http://www.meiduo.site:8000/emails/verification/'
 DEFAULT_FILE_STORAGE = 'meiduo_mall.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # FastDFS相關參數
-FDFS_BASE_URL = 'http://192.168.181.133:8888/'
+FDFS_BASE_URL = 'http://192.168.181.135:8888/'
 # FDFS_BASE_URL = 'http://image.meiduo.site:8888/'
 
 

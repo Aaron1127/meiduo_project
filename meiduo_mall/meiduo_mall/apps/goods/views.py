@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.views import View
 from django import http
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 
-from goods.models import GoodsCategory
+from goods.models import GoodsCategory, SKU
 from contents.utils import get_categories
 from goods.utils import get_breadcrumb
 # Create your views here.
@@ -41,18 +41,30 @@ class ListView(View):
         breadcrumb = get_breadcrumb(category)
 
         # 分頁和排序查詢 category查詢sku 一對多
+        #skus = SKU.objects.filter(category=category, is_launched=True).order_by(sort_field)
         skus = category.sku_set.filter(is_launched=True).order_by(sort_field)
 
         # 創建分頁器
         paginator = Paginator(skus, 5)
+
+        try:
+            # 獲取用戶當前要看的那頁紀錄
+            page_skus = paginator.page(page_num)
+
+        except EmptyPage:
+            return http.HttpResponseNotFound('Empty page')
+
         # 總頁數
         total_pages = paginator.num_pages
-        # 獲取用戶當前要看的那頁紀錄
-        page_skus = paginator.page(page_num)
 
         context = {
             'categories': categories,
             'breadcrumb': breadcrumb,
+            'page_skus': page_skus,
+            'total_page': total_pages,
+            'page_num': page_num,
+            'sort': sort,
+            'category_id': category_id,
         }
 
         return render(request, 'list.html', context)
