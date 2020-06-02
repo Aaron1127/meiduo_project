@@ -14,7 +14,30 @@ class DetailView(View):
     """商品詳情頁"""
 
     def get(self, request, sku_id):
-        return render(request, 'detail.html')
+        """提供商品詳情頁"""
+
+        # 接收參數和校驗參數
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return render(request, '404.html')
+
+        # 查詢商品分類
+        categories = get_categories()
+
+        # 查詢麵包屑導航
+        breadcrump = get_breadcrumb(sku.category)
+
+        # 查詢sku
+
+        # 構造上下文
+        context = {
+            'categories': categories,
+            'breadcrumb': breadcrump,
+            'sku': sku,
+        }
+
+        return render(request, 'detail.html', context)
 
 
 class HotGoodsView(View):
