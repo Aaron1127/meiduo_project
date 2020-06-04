@@ -163,3 +163,15 @@ class SKUSpecification(BaseModel):
 
     def __str__(self):
         return '%s: %s - %s' % (self.sku, self.spec.name, self.option.value)
+
+
+class GoodsVisitCount(BaseModel):
+    """統計分類商品訪問量模型類"""
+    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品分類')
+    count = models.IntegerField(verbose_name='訪問量', default=0)
+    date = models.DateField(auto_now_add=True, verbose_name='統計日期')
+
+    class Meta:
+        db_table = 'tb_goods_visit'
+        verbose_name = '統計分類商品訪問量'
+        verbose_name_plural = verbose_name

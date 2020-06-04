@@ -2,12 +2,33 @@ from django.shortcuts import render
 from django.views import View
 from django import http
 from django.core.paginator import Paginator, EmptyPage
+from django.utils import timezone
 
-from goods.models import GoodsCategory, SKU
+from goods.models import GoodsCategory, SKU, GoodsVisitCount
 from contents.utils import get_categories
 from goods.utils import get_breadcrumb
 from meiduo_mall.utils.response_code import RETCODE
 # Create your views here.
+
+
+class DetailVisitView(View):
+    """統計分類商品的訪問量"""
+
+    def post(self, request, category_id):
+
+        # 接收校驗參數
+        try:
+            category = GoodsCategory.objects.get(id=category_id)
+        except GoodsCategory.DoesNotExist:
+            return http.HttpResponseForbidden('category_id不存在')
+
+        # 獲取當天日期
+        t = timezone.localtime()
+
+        # 統計指定分類商品的訪問量
+        counts_data = GoodsVisitCount.objects.filter(date=, category=category)
+
+
 
 
 class DetailView(View):
@@ -28,13 +49,46 @@ class DetailView(View):
         # 查詢麵包屑導航
         breadcrump = get_breadcrumb(sku.category)
 
-        # 查詢sku
+        # 構建當前商品的規格
+        sku_specs = sku.specs.order_by('spec_id')
+        sku_key = []
+        for spec in sku_specs:
+            sku_key.append(spec.option.id)
+        # 獲取當前商品的所有SKU
+        skus = sku.spu.sku_set.all()
+        # 構建不同規格參數(選項)的sku字典
+        spec_sku_map = {}
+        for s in skus:
+            # 獲取sku的規格參數
+            s_specs = s.specs.order_by('spec_id')
+            # 用於形成規格參數-sku字典的鍵
+            key = []
+            for spec in s_specs:
+                key.append(spec.option.id)
+            # 向規格參數-sku字典添加紀錄
+            spec_sku_map[tuple(key)] = s.id
+        # 獲取當前商品的規格訊息
+        goods_specs = sku.spu.specs.order_by('id')
+        # 若當前sku的規格訊息不完整，則不再繼續
+        if len(sku_key) < len(goods_specs):
+            return
+        for index, spec in enumerate(goods_specs):
+            # 複製當前sku的規格鍵
+            key = sku_key[:]
+            # 該規格的選項
+            spec_options = spec.options.all()
+            for option in spec_options:
+                # 在規格參數sku字典中查找符合當前規格的sku
+                key[index] = option.id
+                option.sku_id = spec_sku_map.get(tuple(key))
+            spec.spec_options = spec_options
 
         # 構造上下文
         context = {
             'categories': categories,
             'breadcrumb': breadcrump,
             'sku': sku,
+            'specs': goods_specs,
         }
 
         return render(request, 'detail.html', context)

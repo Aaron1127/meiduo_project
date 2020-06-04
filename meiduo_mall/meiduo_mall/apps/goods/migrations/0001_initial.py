@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
                 ('sales', models.IntegerField(default=0, verbose_name='銷量')),
                 ('comments', models.IntegerField(default=0, verbose_name='評價數')),
                 ('is_launched', models.BooleanField(default=True, verbose_name='是否上架銷售')),
-                ('default_image_url', models.CharField(blank=True, default='', max_length=200, null=True, verbose_name='默認圖片')),
+                ('default_image', models.CharField(blank=True, default='', max_length=200, null=True, verbose_name='默認圖片')),
                 ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='goods.GoodsCategory', verbose_name='從屬類別')),
             ],
             options={
