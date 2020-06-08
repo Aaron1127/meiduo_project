@@ -3,6 +3,7 @@ from django.views import View
 from django import http
 from django.core.paginator import Paginator, EmptyPage
 from django.utils import timezone
+from datetime import datetime
 
 from goods.models import GoodsCategory, SKU, GoodsVisitCount
 from contents.utils import get_categories
@@ -24,11 +25,26 @@ class DetailVisitView(View):
 
         # 獲取當天日期
         t = timezone.localtime()
+        # 當日時間字串
+        today_str = '%d-%02d-%02d' % (t.year, t.month, t.day)
+        # 再將時間字串轉為datetime
+        today_date = datetime.strptime(today_str, '%Y-%m-%d')
 
         # 統計指定分類商品的訪問量
-        counts_data = GoodsVisitCount.objects.filter(date=, category=category)
+        try:
+            counts_data = GoodsVisitCount.objects.get(date=today_date, category=category)
+        except GoodsVisitCount.DoesNotExist:
+            counts_data = GoodsVisitCount()
 
+        try:
+            counts_data.category = category
+            counts_data.count += 1
+            counts_data.date = today_date
+            counts_data.save()
+        except Exception as e:
+            return http.HttpResponseServerError('統計失敗')
 
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
 
 
 class DetailView(View):
