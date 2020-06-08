@@ -51,7 +51,23 @@ class UserBrowseHistory(LoginRequiredJSONMixin, View):
         # 響應結果
         return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
 
-        pass
+    def get(self, request):
+        """查詢用戶商品瀏覽紀錄"""
+        user = request.user
+        redis_conn = get_redis_connection('history')
+        sku_ids = redis_conn.lrange('history_%s' % user.id, 0, -1)
+
+        skus = []
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(id=sku_id)
+            skus.append({
+                'id': sku.id,
+                'name': sku.name,
+                'price': sku.price,
+                'default_image_url': sku.default_image.url
+            })
+
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'skus': skus})
 
 
 class UpdateTitleAddressView(LoginRequiredJSONMixin, View):
