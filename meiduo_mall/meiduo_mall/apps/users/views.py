@@ -13,9 +13,45 @@ from meiduo_mall.utils.views import LoginRequiredJSONMixin
 from celery_tasks.email.tasks import send_verify_email
 from users.utils import generate_verify_email_url, check_verify_email_token
 from . import constants
+from goods.models import SKU
 # Create your views here.
 
 logger = logging.getLogger('django')
+
+
+class UserBrowseHistory(LoginRequiredJSONMixin, View):
+    """用戶瀏覽紀錄"""
+
+    def post(self, request):
+        """保存用戶商品瀏覽紀錄"""
+        # 接收參數
+        json_str = request.body.decode()
+        json_dict = json.loads(json_str)
+        sku_id = json_dict.get('sku_id')
+
+        # 校驗參數
+        try:
+            SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return http.HttpResponseForbidden('參數sku_id錯誤')
+
+        # 保存sku_id到redis
+        redis_conn = get_redis_connection('history')
+        user = request.user
+        pl = redis_conn.pipeline()
+        # 先去重
+        pl.lrem('history_%s' % user.id, 0, sku_id)
+        # 再保存:最近瀏覽的商品在最前面
+        pl.lpush('history_%s' % user.id, sku_id)
+        # 最後擷取
+        pl.ltrim('history_%s' % user.id, 0, 4)
+        # 執行
+        pl.execute()
+
+        # 響應結果
+        return http.JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK'})
+
+        pass
 
 
 class UpdateTitleAddressView(LoginRequiredJSONMixin, View):

@@ -29,5 +29,7 @@ urlpatterns = [
     url(r'^addresses/(?P<address_id>\d+)/default/$', views.DefaultAddressView.as_view()),
     # 設置收貨地址標題
     url(r'^addresses/(?P<address_id>\d+)/title/$', views.UpdateTitleAddressView.as_view()),
+    # 用戶商品瀏覽記錄
+    url(r'^browse_histories/$', views.UserBrowseHistory.as_view()),
 
 ]

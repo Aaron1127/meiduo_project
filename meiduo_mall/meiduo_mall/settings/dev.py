@@ -136,6 +136,13 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+    "history": {  # 用戶商品瀏覽紀錄
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://192.168.181.135/3",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
